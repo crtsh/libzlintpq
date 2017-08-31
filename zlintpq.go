@@ -23,8 +23,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/zmap/zcrypto/x509"
+	"github.com/zmap/zlint"
 	"github.com/zmap/zlint/lints"
-	"github.com/zmap/zlint/zlint"
 )
 
 func Zlint_wrapper(b64_cert string) string {
@@ -38,7 +38,7 @@ func Zlint_wrapper(b64_cert string) string {
 		return "ERROR"
 	}
 
-	zlint_result := zlint.ZLintResultTestHandler(cert)
+	zlint_result := zlint.LintCertificate(cert)
 	json_result, err := json.Marshal(zlint_result.ZLint)
 	if err != nil {
 		return "ERROR"
@@ -56,10 +56,10 @@ func Zlint_wrapper(b64_cert string) string {
 		switch vv := v.(type) {
 		default:
 			switch fmt.Sprintf("%v", vv.(map[string]interface{})["result"]) {
-				case "4": output += "N"
-				case "5": output += "W"
-				case "6": output += "E"
-				case "7": output += "F"
+				case "info": output += "N"
+				case "warn": output += "W"
+				case "error": output += "E"
+				case "fatal": output += "F"
 				default: continue
 			}
 			output += ": " + lints.Lints[k].Description + "\n"
