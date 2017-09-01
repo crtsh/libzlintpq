@@ -39,13 +39,13 @@ func Zlint_wrapper(b64_cert string) string {
 	}
 
 	zlint_result := zlint.LintCertificate(cert)
-	json_result, err := json.Marshal(zlint_result.ZLint)
+	json_bytes, err := json.Marshal(zlint_result.Results)
 	if err != nil {
 		return fmt.Sprintf("F: %s", err)
 	}
 
 	var f interface{}
-	err = json.Unmarshal(json_result, &f)
+	err = json.Unmarshal(json_bytes, &f)
 	if err != nil {
 		return fmt.Sprintf("F: %s", err)
 	}
