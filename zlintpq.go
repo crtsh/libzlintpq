@@ -30,24 +30,24 @@ import (
 func Zlint_wrapper(b64_cert string) string {
 	der_cert, err := base64.StdEncoding.DecodeString(b64_cert)
 	if err != nil {
-		return "ERROR"
+		return fmt.Sprintf("F: %s", err)
 	}
 
 	cert, err := x509.ParseCertificate(der_cert)
 	if err != nil {
-		return "ERROR"
+		return fmt.Sprintf("F: %s", err)
 	}
 
 	zlint_result := zlint.LintCertificate(cert)
 	json_result, err := json.Marshal(zlint_result.ZLint)
 	if err != nil {
-		return "ERROR"
+		return fmt.Sprintf("F: %s", err)
 	}
 
 	var f interface{}
 	err = json.Unmarshal(json_result, &f)
 	if err != nil {
-		return "ERROR"
+		return fmt.Sprintf("F: %s", err)
 	}
 
 	m := f.(map[string]interface{})
