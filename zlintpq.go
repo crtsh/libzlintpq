@@ -1,6 +1,6 @@
 /* libzlintpq - run zlint from a PostgreSQL function
  * Written by Rob Stradling
- * Copyright (C) 2017 COMODO CA Limited
+ * Copyright (C) 2017-2020 Sectigo Limited
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,10 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint"
-	"github.com/zmap/zlint/lints"
+	"github.com/zmap/zlint/v2"
+	"github.com/zmap/zlint/v2/lint"
 )
 
 func Zlint_wrapper(b64_cert string) string {
@@ -39,31 +38,17 @@ func Zlint_wrapper(b64_cert string) string {
 	}
 
 	zlint_result := zlint.LintCertificate(cert)
-	json_bytes, err := json.Marshal(zlint_result.Results)
-	if err != nil {
-		return fmt.Sprintf("F: %s", err)
-	}
-
-	var f interface{}
-	err = json.Unmarshal(json_bytes, &f)
-	if err != nil {
-		return fmt.Sprintf("F: %s", err)
-	}
-
-	m := f.(map[string]interface{})
+	registry := lint.GlobalRegistry()
 	output := ""
-	for k, v := range m {
-		switch vv := v.(type) {
-		default:
-			switch fmt.Sprintf("%v", vv.(map[string]interface{})["result"]) {
-				case "info": output += "N"
-				case "warn": output += "W"
-				case "error": output += "E"
-				case "fatal": output += "F"
-				default: continue
-			}
-			output += ": " + lints.Lints[k].Description + "\n"
+	for k, v := range zlint_result.Results {
+		switch v.Status {
+			case lint.Notice: output += "N"
+			case lint.Warn: output += "W"
+			case lint.Error: output += "E"
+			case lint.Fatal: output += "F"
+			default: continue
 		}
+		output += ": " + registry.ByName(k).Description + "\n"
 	}
 
 	return output
