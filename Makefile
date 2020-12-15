@@ -1,7 +1,7 @@
 export GOPATH=/home/rob/go
 
-libzlint.so:
-	$(GOPATH)/bin/plgo .
+libzlintpq.so:
+	$(GOPATH)/bin/plgo -v .
 
 clean:
 	rm -rf build

@@ -16,14 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// plgo requires "package main"
 package main
 
 import (
 	"encoding/base64"
 	"fmt"
 	"github.com/zmap/zcrypto/x509"
-	"github.com/zmap/zlint/v2"
-	"github.com/zmap/zlint/v2/lint"
+	"github.com/zmap/zlint/v3"
+	"github.com/zmap/zlint/v3/lint"
 )
 
 func Zlint_wrapper(b64_cert string) string {
@@ -53,3 +54,8 @@ func Zlint_wrapper(b64_cert string) string {
 
 	return output
 }
+
+// plgo won't work when main() is defined, but "go get -u" exits prematurely when main() is NOT defined!
+// So, uncomment this in order to run "go get -u" successfully.
+/*func main() {
+}*/
